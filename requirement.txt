@@ -1,0 +1,16 @@
+coverage==4.5.1
+cycler==0.10.0
+et-xmlfile==1.0.1
+jdcal==1.4
+kiwisolver==1.0.1
+matplotlib==2.2.2
+numpy==1.14.3
+openpyxl==2.5.3
+pandas==0.23.0
+pyparsing==2.2.0
+python-dateutil==2.7.2
+pytz==2018.4
+scikit-learn==0.19.1
+scipy==1.1.0
+six==1.11.0
+xlrd==1.1.0
