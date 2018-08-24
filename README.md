@@ -1,2 +1,2 @@
 # Fuzzy-C-Mean
-Python Implementation
+Python Implementation of Fuzzy C Mean algorithm
