@@ -46,7 +46,7 @@ def MapData(file):
     f = open(str(file), 'r')
     for line in f:
         current = line.split()
-        for j in range(0, len(current)):
+        for j in range(len(current)):
             current[j] = float(current[j])
         data.append(current)
     print("Data Imported")
@@ -84,10 +84,10 @@ def ShuffleData(data):
         randomise data, and also keeps record of the order of randomisation.
     """
 
-    order = list(range(0, len(data)))
+    order = list(range(len(data)))
     random.shuffle(order)
-    new_data = [[] for i in range(0, len(data))]
-    for index in range(0, len(order)):
+    new_data = [[] for _ in range(len(data))]
+    for index in range(len(order)):
         new_data[index] = data[order[index]]
     return new_data, order
 
@@ -98,7 +98,7 @@ def DeShuffleData(data, order):
         return the original order of the data,
         pass the order list returned in ShuffleData() as an argument
     """
-    new_data = [[] for i in range(0, len(data))]
+    new_data = [[] for _ in range(len(data))]
     for index in range(len(order)):
         new_data[order[index]] = data[index]
     return new_data
@@ -113,8 +113,8 @@ def EndCondition(U, U_old):
     # used for end condition
     Epsilon = 0.00001
 
-    for i in range(0, len(U)):
-        for j in range(0, len(U[0])):
+    for i in range(len(U)):
+        for j in range(len(U[0])):
             if abs(U[i][j] - U_old[i][j]) > Epsilon:
                 return False
     return True
@@ -130,14 +130,14 @@ def Initialise_U(data, cluster_number):
     MAX = 10000.0
 
     U = []
-    for i in range(0, len(data)):
+    for _ in range(len(data)):
         current = []
         rand_sum = 0.0
-        for j in range(0, cluster_number):
+        for _ in range(cluster_number):
             tmp = random.randint(1, int(MAX))
             current.append(tmp)
             rand_sum += tmp
-        for j in range(0, cluster_number):
+        for j in range(cluster_number):
             current[j] = current[j] / rand_sum
         U.append(current)
     return U
@@ -150,7 +150,7 @@ def Distance(point, center):
     if len(point) != len(center):
         return -1
     tmp = 0.0
-    for i in range(0, len(point)):
+    for i in range(len(point)):
         tmp += abs(point[i] - center[i]) ** 2
     return math.sqrt(tmp)
 
@@ -161,35 +161,29 @@ def normalise_U(U):
         This de-fuzzifies the U, at the end of the clustering. It would assume that the point
         is a member of the cluster who's membership is maximum.
     """
-    for i in range(0, len(U)):
+    for i in range(len(U)):
         maximum = max(U[i])
-        for j in range(0, len(U[0])):
-            if U[i][j] != maximum:
-                U[i][j] = 0
-            else:
-                U[i][j] = 1
+        for j in range(len(U[0])):
+            U[i][j] = 0 if U[i][j] != maximum else 1
     return U
 
 
 # Graphical show
 def color(cluster_number):
-    colors = []
-    for i in range(0, cluster_number):
-        colors.append("#%06x" % random.randint(0, 0xFFFFFF))
-    return colors
+    return ["#%06x" % random.randint(0, 0xFFFFFF) for _ in range(cluster_number)]
 
 
 def animate(data, U, cluster_number, colors):
     # plt.close("all")
-    cluster = [[] for i in range(0, cluster_number)]
-    for i in range(0, len(U)):
-        for j in range(0, cluster_number):
+    cluster = [[] for _ in range(cluster_number)]
+    for i in range(len(U)):
+        for j in range(cluster_number):
             if U[i][j] == 1:
                 cluster[j].append(data[i])
 
     plt.ion()
     plt.figure()
-    for i in range(0, cluster_number):
+    for i in range(cluster_number):
         x_list_0 = [x for [x, y] in cluster[i]]
         y_list_0 = [y for [x, y] in cluster[i]]
         plt.plot(x_list_0, y_list_0, colors[i], marker='o', ls='')
@@ -212,7 +206,7 @@ def FuzzyReducer(data, cluster_number, m=2):
     U = Initialise_U(data, cluster_number)
 
 
-    print("Cluster Numbers = " + str(cluster_number))
+    print(f"Cluster Numbers = {str(cluster_number)}")
 
     # Graphical Show
     colors = color(cluster_number)
@@ -224,19 +218,19 @@ def FuzzyReducer(data, cluster_number, m=2):
     # --------- Reducer -----------
     # initialise the loop
 
-    while (True):
+    while True:
 
         # create a copy of it, to check the end conditions
         U_old = copy.deepcopy(U)
 
         # cluster center vector
         C = []
-        for j in range(0, cluster_number):
+        for j in range(cluster_number):
             current_cluster_center = []
-            for i in range(0, len(data[0])):  # this is the number of dimensions
+            for i in range(len(data[0])):  # this is the number of dimensions
                 _sum_num = 0.0
                 _sum_tmp = 0.0
-                for k in range(0, len(data)):
+                for k in range(len(data)):
                     _sum_num += (U[k][j] ** m) * data[k][i]
                     _sum_tmp += (U[k][j] ** m)
                 current_cluster_center.append(_sum_num / _sum_tmp)
@@ -246,18 +240,16 @@ def FuzzyReducer(data, cluster_number, m=2):
 
         # creating a Distance vector, useful in calculating the U matrix.
         Distance_matrix = []
-        for i in range(0, len(data)):
-            current = []
-            for j in range(0, cluster_number):
-                current.append(Distance(data[i], C[j]))
+        for i in range(len(data)):
+            current = [Distance(data[i], C[j]) for j in range(cluster_number)]
             Distance_matrix.append(current)
         # print('Distance Matrix : ', Distance_matrix)
 
         # update U vector
-        for j in range(0, cluster_number):
-            for i in range(0, len(data)):
+        for j in range(cluster_number):
+            for i in range(len(data)):
                 tmp = 0.0
-                for k in range(0, cluster_number):
+                for k in range(cluster_number):
                     tmp += (Distance_matrix[i][j] / Distance_matrix[i][k]) ** (2 / (m - 1))
                 U[i][j] = 1 / tmp
         # print('Update U : ', U)
@@ -280,7 +272,7 @@ def Print_Matrix(list):
     """
         Prints the matrix
     """
-    for i in range(0, len(list)):
+    for i in range(len(list)):
         print(list[i])
 
 
