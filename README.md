@@ -15,4 +15,4 @@ The fuzziness parameter (m) affects the degree to which data points can belong t
 
 The FCM algorithm is particularly useful in situations where the boundaries between clusters are not well-defined, and data points can naturally belong to multiple clusters. Applications of FCM can be found in various domains, including image processing, pattern recognition, and data mining.
 
-The main script is available at FuzzyCMean.py
+The main script is available at `FuzzyCMean.py`
